@@ -53,4 +53,27 @@ defmodule Description.DSLs do
       @desc update_in(@desc, [:responses], &(&1 ++ [unquote(status)]))
     end
   end
+
+  @doc """
+  Define model for current endpoint.
+  """
+  defmacro model(name, do: block) do
+    quote do
+      @desc put_in(@desc, [:model], %{name: unquote(name), fields: []})
+      unquote(block)
+    end
+  end
+
+  @doc """
+  Define field for endpoint model.
+  """
+  defmacro field(name, options) do
+    type = Keyword.get(options, :type)
+    format = Keyword.get(options, :format)
+    field = %{name: name, type: type, format: format} |> Macro.escape()
+
+    quote do
+      @desc update_in(@desc, [:model], &(%{name: &1.name, fields: &1.fields ++ [unquote(field)]}))
+    end
+  end
 end
