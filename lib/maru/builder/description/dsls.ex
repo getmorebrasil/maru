@@ -68,9 +68,11 @@ defmodule Description.DSLs do
   Define field for endpoint model.
   """
   defmacro field(name, options) do
-    type = Keyword.get(options, :type)
-    format = Keyword.get(options, :format)
-    field = %{name: name, type: type, format: format} |> Macro.escape()
+    field = case options do
+      [type: type]   -> %{name: name, type: type}
+      [model: model] -> %{name: name, model: model}
+    end
+    |> Macro.escape()
 
     quote do
       @desc update_in(@desc, [:model], &(%{name: &1.name, fields: &1.fields ++ [unquote(field)]}))
