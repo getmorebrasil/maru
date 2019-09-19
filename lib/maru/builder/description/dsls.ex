@@ -78,4 +78,13 @@ defmodule Description.DSLs do
       @desc update_in(@desc, [:model], &(%{name: &1.name, fields: &1.fields ++ [unquote(field)]}))
     end
   end
+
+  @doc """
+  Define tag for endpoint model.
+  """
+  defmacro tag(tag) do
+    quote do
+      @desc put_in(@desc, [:tag], unquote(tag))
+    end
+  end
 end
